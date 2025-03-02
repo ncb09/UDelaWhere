@@ -41,7 +41,7 @@ UDelaWhere?? leverages a modern tech stack:
 - **Styling**: Styled Components for component-based CSS-in-JS
 - **Database & Authentication**: Supabase for leaderboard functionality
 - **Image Processing**: FFmpeg for panorama to cubemap conversion
-- **Original Panoramas**: Captured with Polycam for high-quality 360° images
+- **Original Panoramas**: Captured with [Polycam](https://poly.cam/) for high-quality 360° images
 
 ## 🚀 Getting Started
 
@@ -90,7 +90,7 @@ The leaderboard functionality uses Supabase as a backend:
 
 The game uses a two-step process to prepare panoramic images:
 
-1. **Capture**: High-quality 360° panoramas captured around campus using Polycam
+1. **Capture**: High-quality 360° panoramas captured around campus using [Polycam](https://poly.cam/)
 2. **Conversion**: FFmpeg processes equirectangular panoramas into cubemap format for Three.js
 3. **Integration**: Processed images with coordinates are loaded into the game environment
 
