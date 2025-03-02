@@ -158,7 +158,7 @@ const CloseButton = styled.button`
 
 const MapWrapper = styled.div<{ isExpanded: boolean; isSlightlyExpanded: boolean }>`
   position: fixed;
-  bottom: 120px;
+  bottom: 40px;
   right: 40px;
   width: ${props => {
     if (props.isExpanded) return 'calc(100% - 80px)';
@@ -170,13 +170,20 @@ const MapWrapper = styled.div<{ isExpanded: boolean; isSlightlyExpanded: boolean
     if (props.isSlightlyExpanded) return '450px';
     return '250px';
   }};
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   transform-origin: bottom right;
   border: 2px solid ${props => props.isExpanded ? '#FFD200' : 'rgba(255, 210, 0, 0.3)'};
+
+  &:hover:not([data-expanded="true"]) {
+    width: 500px;
+    height: 320px;
+    transform: translateZ(0);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  }
 
   ${CloseButton}, .leaflet-control-zoom {
     opacity: ${props => props.isExpanded ? 1 : 0};
@@ -726,6 +733,10 @@ const Game: React.FC = () => {
       return;
     }
     
+    // Reset map size to default small size
+    setIsMapExpanded(false);
+    setIsSlightlyExpanded(false);
+    
     setGameState(prev => ({
       ...prev,
       currentRound: prev.currentRound + 1,
@@ -842,6 +853,7 @@ const Game: React.FC = () => {
           <MapWrapper 
             isExpanded={isMapExpanded}
             isSlightlyExpanded={isSlightlyExpanded}
+            data-expanded={isMapExpanded || isSlightlyExpanded ? "true" : "false"}
             onClick={(e) => {/* Prevent map from expanding to fullscreen when clicked */
               e.stopPropagation();
             }}
