@@ -1,0 +1,353 @@
+[
+  {
+    "id": "img1",
+    "image": "/locations/img1/",
+    "coordinates": [
+      39.6801,
+      -75.75369
+    ],
+    "name": "crosswalk_GoreHall"
+  },
+  {
+    "id": "img2",
+    "image": "/locations/img2/",
+    "coordinates": [
+      39.68029,
+      -75.75237
+    ],
+    "name": "northGreenMid"
+  },
+  {
+    "id": "img3",
+    "image": "/locations/img3/",
+    "coordinates": [
+      39.68014,
+      -75.7518
+    ],
+    "name": "infrontEvans"
+  },
+  {
+    "id": "img4",
+    "image": "/locations/img4/",
+    "coordinates": [
+      39.68015,
+      -75.75058
+    ],
+    "name": "alleyNextToEvans"
+  },
+  {
+    "id": "img5",
+    "image": "/locations/img5/",
+    "coordinates": [
+      39.6798,
+      -75.74945
+    ],
+    "name": "HallNexttoScienceBuilding"
+  },
+  {
+    "id": "img6",
+    "image": "/locations/img6/",
+    "coordinates": [
+      39.67871,
+      -75.74913
+    ],
+    "name": "PathwaySci_Penny"
+  },
+  {
+    "id": "img7",
+    "image": "/locations/img7/",
+    "coordinates": [
+      39.67733,
+      -75.74847
+    ],
+    "name": "RusselNext"
+  },
+  {
+    "id": "img8",
+    "image": "/locations/img8/",
+    "coordinates": [
+      39.67677,
+      -75.74806
+    ],
+    "name": "ReddingTruf"
+  },
+  {
+    "id": "img9",
+    "image": "/locations/img9/",
+    "coordinates": [
+      39.67637,
+      -75.74622
+    ],
+    "name": "Gilbert"
+  },
+  {
+    "id": "img10",
+    "image": "/locations/img10/",
+    "coordinates": [
+      39.67742,
+      -75.75027
+    ],
+    "name": "CR"
+  },
+  {
+    "id": "img11",
+    "image": "/locations/img11/",
+    "coordinates": [
+      39.67725,
+      -75.7512
+    ],
+    "name": "backCR"
+  },
+  {
+    "id": "img12",
+    "image": "/locations/img12/",
+    "coordinates": [
+      39.67694,
+      -75.74965
+    ],
+    "name": "InsidePerkin"
+  },
+  {
+    "id": "img13",
+    "image": "/locations/img13/",
+    "coordinates": [
+      39.67588,
+      -75.75055
+    ],
+    "name": "Symth_SouthAca"
+  },
+  {
+    "id": "img14",
+    "image": "/locations/img14/",
+    "coordinates": [
+      39.67591,
+      -75.75123
+    ],
+    "name": "behindKent"
+  },
+  {
+    "id": "img15",
+    "image": "/locations/img15/",
+    "coordinates": [
+      39.6758,
+      -75.75198
+    ],
+    "name": "SouthGreenNurse"
+  },
+  {
+    "id": "img16",
+    "image": "/locations/img16/",
+    "coordinates": [
+      39.67749,
+      -75.75207
+    ],
+    "name": "SouthGreenPool"
+  },
+  {
+    "id": "img17",
+    "image": "/locations/img17/",
+    "coordinates": [
+      39.68722,
+      -75.7548
+    ],
+    "name": "OutsideBridge"
+  },
+  {
+    "id": "img18",
+    "image": "/locations/img18/",
+    "coordinates": [
+      39.68825,
+      -75.75561
+    ],
+    "name": "BetweenBridge"
+  },
+  {
+    "id": "img19",
+    "image": "/locations/img19/",
+    "coordinates": [
+      39.68884,
+      -75.75684
+    ],
+    "name": "IndeTruf"
+  },
+  {
+    "id": "img20",
+    "image": "/locations/img20/",
+    "coordinates": [
+      39.68962,
+      -75.75636
+    ],
+    "name": "JamesSmithStairs"
+  },
+  {
+    "id": "img21",
+    "image": "/locations/img21/",
+    "coordinates": [
+      39.69006,
+      -75.75723
+    ],
+    "name": "GerogeReed"
+  },
+  {
+    "id": "img22",
+    "image": "/locations/img22/",
+    "coordinates": [
+      39.68803,
+      -75.75561
+    ],
+    "name": "UnderBridge"
+  },
+  {
+    "id": "img23",
+    "image": "/locations/img23/",
+    "coordinates": [
+      39.6849,
+      -75.75189
+    ],
+    "name": "LilBobFeild1"
+  },
+  {
+    "id": "img24",
+    "image": "/locations/img24/",
+    "coordinates": [
+      39.68488,
+      -75.7508
+    ],
+    "name": "LilBobFeild2"
+  },
+  {
+    "id": "img25",
+    "image": "/locations/img25/",
+    "coordinates": [
+      39.68422,
+      -75.7526
+    ],
+    "name": "LilBob"
+  },
+  {
+    "id": "img26",
+    "image": "/locations/img26/",
+    "coordinates": [
+      39.68368,
+      -75.75275
+    ],
+    "name": "BoolIconLilBob"
+  },
+  {
+    "id": "img27",
+    "image": "/locations/img27/",
+    "coordinates": [
+      39.6828,
+      -75.74975
+    ],
+    "name": "Bookstore"
+  },
+  {
+    "id": "img28",
+    "image": "/locations/img28/",
+    "coordinates": [
+      39.6824,
+      -75.75252
+    ],
+    "name": "MainStreetGreen"
+  },
+  {
+    "id": "img29",
+    "image": "/locations/img29/",
+    "coordinates": [
+      39.68163,
+      -75.75243
+    ],
+    "name": "NGreenAfterLight"
+  },
+  {
+    "id": "img30",
+    "image": "/locations/img30/",
+    "coordinates": [
+      39.67952,
+      -75.7522
+    ],
+    "name": "infrontMemorial"
+  },
+  {
+    "id": "img31",
+    "image": "/locations/img31/",
+    "coordinates": [
+      39.67909,
+      -75.75305
+    ],
+    "name": "Book"
+  },
+  {
+    "id": "img32",
+    "image": "/locations/img32/",
+    "coordinates": [
+      39.6781,
+      -75.75202
+    ],
+    "name": "InforntMorris"
+  },
+  {
+    "id": "img33",
+    "image": "/locations/img33/",
+    "coordinates": [
+      39.67821,
+      -75.75098
+    ],
+    "name": "allison"
+  },
+  {
+    "id": "img34",
+    "image": "/locations/img34/",
+    "coordinates": [
+      39.68117,
+      -75.75389
+    ],
+    "name": "Kirkbride"
+  },
+  {
+    "id": "img35",
+    "image": "/locations/img35/",
+    "coordinates": [
+      39.6809,
+      -75.75468
+    ],
+    "name": "CircleInfrontEwing"
+  },
+  {
+    "id": "img36",
+    "image": "/locations/img36/",
+    "coordinates": [
+      39.68028,
+      -75.75482
+    ],
+    "name": "InfrontPurnell"
+  },
+  {
+    "id": "img37",
+    "image": "/locations/img37/",
+    "coordinates": [
+      39.68058,
+      -75.75366
+    ],
+    "name": "insideOverway"
+  },
+  {
+    "id": "img38",
+    "image": "/locations/img38/",
+    "coordinates": [
+      39.68187,
+      -75.75374
+    ],
+    "name": "Trabant"
+  },
+  {
+    "id": "img39",
+    "image": "/locations/img39/",
+    "coordinates": [
+      39.68335,
+      -75.75366
+    ],
+    "name": "oldCollege"
+  }
+]
