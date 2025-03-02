@@ -128,3 +128,36 @@ The leaderboard functionality uses Supabase to store and retrieve player scores.
 - **Unique Usernames**: The system ensures usernames are unique across all players
 - **Best Score Tracking**: Only the highest score for each player is shown on the leaderboard
 - **Real-time Updates**: The leaderboard is updated in real-time when new scores are submitted 
+
+## Gemini AI Integration
+
+The game uses Google's Gemini AI to analyze location images and adjust the difficulty of each round based on how recognizable the location is:
+
+1. **Image Analysis**: When a game starts, Gemini AI analyzes each panoramic image and assigns a "recognizability score" from 1-10:
+   - Score of 1: Very difficult to recognize the location
+   - Score of 10: Very easy to recognize the location
+
+2. **Adaptive Scoring System**:
+   - The scoring system adjusts based on the recognizability score
+   - Locations that are easy to recognize (high score) require more precise guesses
+   - Locations that are difficult to recognize (low score) allow for less precise guesses
+
+3. **Setup Gemini AI**:
+   - Sign up for a Google AI API key at [Google AI Studio](https://ai.google.dev/)
+   - Add your API key to the `.env.local` file:
+     ```
+     REACT_APP_GEMINI_API_KEY=your-gemini-api-key
+     ```
+
+## Scoring System
+
+The scoring system now uses a dynamic approach based on location recognizability:
+
+1. **Perfect Score**: 5,000 points for highly accurate guesses
+2. **Distance Threshold**: 
+   - For highly recognizable locations (score 10): Maximum 500 feet for points
+   - For difficult to recognize locations (score 1): Maximum 2,000 feet for points
+3. **Linear Decrease**: Points decrease linearly from 5,000 to 0 as distance increases
+4. **Zero Points**: If your guess exceeds the maximum distance threshold
+
+The maximum possible score for a 5-round game is still 25,000 points. 

@@ -7,6 +7,7 @@ import L from 'leaflet';
 import ImageViewer360 from './ImageViewer360';
 import locationsData from '../data/locations.json';
 import { addScore, LeaderboardEntry as SupabaseLeaderboardEntry, isUsernameTaken } from '../lib/supabase';
+import { processLocationImages } from '../lib/gemini';
 
 // Fix for default marker icons in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -488,6 +489,76 @@ const GuessButton = styled(Button)`
   }
 `;
 
+const ProcessingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 27, 61, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 4000;
+  backdrop-filter: blur(10px);
+  text-align: center;
+  padding: 40px;
+  color: white;
+`;
+
+const ProcessingSpinner = styled.div`
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  border: 6px solid rgba(255, 210, 0, 0.3);
+  border-radius: 50%;
+  border-top-color: #FFD200;
+  animation: spin 1.5s ease-in-out infinite;
+  margin-bottom: 30px;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
+const ProcessingTitle = styled.h2`
+  color: #FFD200;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+`;
+
+const ProcessingInfo = styled.p`
+  font-size: 1.2em;
+  max-width: 600px;
+  margin: 0 auto 15px;
+  line-height: 1.6;
+  opacity: 0.9;
+`;
+
+const DebugInfo = styled.div`
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  max-width: 800px;
+  text-align: left;
+  font-family: monospace;
+  font-size: 0.9em;
+  max-height: 200px;
+  overflow-y: auto;
+  
+  h3 {
+    color: #FFD200;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    margin: 5px 0;
+    line-height: 1.4;
+  }
+`;
+
 interface LeaderboardEntry {
   username: string;
   score: number;
@@ -499,6 +570,7 @@ interface Location {
   image: string;
   coordinates: [number, number];
   name: string;
+  recognizability?: number; // 1-10 score from Gemini
 }
 
 interface GameState {
@@ -515,10 +587,12 @@ interface GameState {
     guessed: [number, number];
     actual: [number, number];
     round: number;
+    recognizability?: number;
   }>;
   username: string | null;
   showUsernameModal: boolean;
   gameEnded: boolean;
+  locationsProcessed: boolean;
 }
 
 // Add this new component for handling map clicks
@@ -602,7 +676,8 @@ const Game: React.FC = () => {
       pastGuesses: [],
       username: localStorage.getItem('username'),
       showUsernameModal: false,
-      gameEnded: false
+      gameEnded: false,
+      locationsProcessed: false
     };
   });
 
@@ -617,6 +692,39 @@ const Game: React.FC = () => {
       setGameState(prev => ({ ...prev, showUsernameModal: true }));
     }
   }, [mode, gameState.username]);
+
+  // Process locations with Gemini to get recognizability scores
+  useEffect(() => {
+    async function processLocations() {
+      if (!gameState.locationsProcessed) {
+        try {
+          console.log("Processing locations with Gemini...");
+          // Display debugging info in the console about the image paths
+          gameState.locations.forEach((loc, index) => {
+            const imageUrl = `${window.location.origin}${loc.image}px.jpg`;
+            console.log(`Debug: Location ${index + 1} (${loc.id}): ${imageUrl}`);
+          });
+          
+          const processedLocations = await processLocationImages(gameState.locations);
+          setGameState(prevState => ({
+            ...prevState,
+            locations: processedLocations,
+            locationsProcessed: true
+          }));
+          console.log("Locations processed:", processedLocations);
+        } catch (error) {
+          console.error("Error processing locations with Gemini:", error);
+          // Still mark as processed to avoid infinite loops, but log the error
+          setGameState(prevState => ({
+            ...prevState,
+            locationsProcessed: true
+          }));
+        }
+      }
+    }
+    
+    processLocations();
+  }, [gameState.locations, gameState.locationsProcessed]);
 
   const handleUsernameSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -726,36 +834,43 @@ const Game: React.FC = () => {
     const currentLocation = gameState.locations[gameState.currentRound - 1];
     const distance = calculateDistance(gameState.selectedLocation, currentLocation.coordinates);
     
-    // Super generous scoring formula with feet measurements:
-    // - Extremely close (< 50 feet): 4900-5000 points
-    // - Very close (< 100 feet): 4500-4900 points
-    // - Close (< 200 feet): 4000-4500 points
-    // - Nearby (< 500 feet): 3000-4000 points
-    // - In the area (< 1000 feet): 2000-3000 points
-    // - Far but trying (any distance): 1000 points minimum
-    let points = 1000; // Minimum points for trying - increased base points
+    // Get recognizability score (default to 5 if not available)
+    const recognizability = currentLocation.recognizability || 5;
     
-    if (distance <= 1000) {
-      if (distance <= 50) {
-        // Super generous curve for very close guesses
-        points = 4900 + (100 * Math.pow(1 - (distance / 50), 1.2));
-      } else if (distance <= 100) {
-        points = 4500 + (400 * (1 - Math.pow((distance - 50) / 50, 1.2)));
-      } else if (distance <= 200) {
-        points = 4000 + (500 * (1 - Math.pow((distance - 100) / 100, 1.2)));
-      } else if (distance <= 500) {
-        points = 3000 + (1000 * (1 - Math.pow((distance - 200) / 300, 1.2)));
+    // Calculate distance threshold based on recognizability
+    // Higher recognizability = stricter threshold
+    // For recognizability 10, max distance for points is 500 feet
+    // For recognizability 1, max distance for points is 2000 feet
+    const maxDistanceForPoints = 2000 - ((recognizability - 1) * 150);
+    
+    // New scoring system:
+    // - Perfect score (5000) if distance is very small
+    // - Linear decrease to 0 as distance approaches maxDistanceForPoints
+    // - 0 points if distance exceeds maxDistanceForPoints
+    let points = 0;
+    
+    if (distance <= maxDistanceForPoints) {
+      // Calculate the minimum distance for perfect score based on recognizability
+      const minDistanceForPerfect = 50 + (recognizability * 5); // 55-100 feet depending on difficulty
+      
+      if (distance <= minDistanceForPerfect) {
+        // Perfect score
+        points = 5000;
       } else {
-        points = 2000 + (1000 * (1 - Math.pow((distance - 500) / 500, 1.2)));
+        // Linear decrease from 5000 to 0
+        const ratio = 1 - ((distance - minDistanceForPerfect) / (maxDistanceForPoints - minDistanceForPerfect));
+        points = Math.round(5000 * Math.max(0, ratio));
       }
     }
     
-    points = Math.max(1000, Math.round(points));
+    // Round to nearest 10 for cleaner scores
+    points = Math.round(points / 10) * 10;
 
     const newGuess = {
       guessed: gameState.selectedLocation as [number, number],
       actual: currentLocation.coordinates,
-      round: gameState.currentRound
+      round: gameState.currentRound,
+      recognizability: recognizability // Store for reference
     };
 
     setGameState(prev => ({
@@ -858,6 +973,25 @@ const Game: React.FC = () => {
         </GameEndScreen>
       ) : (
         <>
+          {!gameState.locationsProcessed && (
+            <ProcessingOverlay>
+              <ProcessingSpinner />
+              <ProcessingTitle>Analyzing Locations</ProcessingTitle>
+              <ProcessingInfo>
+                Gemini AI is analyzing the recognizability of each location...
+              </ProcessingInfo>
+              <ProcessingInfo>
+                This may take a few moments. Each location is being evaluated for how easily identifiable it is.
+              </ProcessingInfo>
+              <DebugInfo>
+                <h3>Debug Information</h3>
+                <p>URL Format: {window.location.origin + gameState.locations[0]?.image}px.jpg</p>
+                <p>API Key Present: {process.env.REACT_APP_GEMINI_API_KEY ? "Yes" : "No"}</p>
+                <p>Locations to Process: {gameState.locations.length}</p>
+                <p>Current Environment: {process.env.NODE_ENV}</p>
+              </DebugInfo>
+            </ProcessingOverlay>
+          )}
           <UserModal isVisible={gameState.showUsernameModal}>
             <UserForm>
               <h2>Welcome to Challenge Mode</h2>
@@ -985,6 +1119,11 @@ const Game: React.FC = () => {
             <ResultInfo>
               <h2>Round {gameState.currentRound} Result</h2>
               <p>Distance: {gameState.lastGuessDistance} feet</p>
+              <p>Location Recognizability: {
+                gameState.locations[gameState.currentRound - 1]?.recognizability 
+                  ? `${gameState.locations[gameState.currentRound - 1].recognizability}/10`
+                  : 'Processing...'
+              }</p>
               <ScoreText score={gameState.lastGuessScore}>
                 +{gameState.lastGuessScore} points
               </ScoreText>
