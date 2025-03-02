@@ -54,6 +54,11 @@ const Button = styled.button`
     transform: none;
     box-shadow: none;
   }
+
+  @media (max-width: 768px) {
+    padding: 14px 30px;
+    font-size: 16px;
+  }
 `;
 
 const GameContainer = styled.div`
@@ -96,6 +101,19 @@ const Timer = styled.div`
     opacity: 0.8;
     margin-bottom: 5px;
   }
+
+  @media (max-width: 768px) {
+    top: 80px;
+    padding: 10px 20px;
+    
+    .time {
+      font-size: 2em;
+    }
+    
+    .label {
+      font-size: 0.8em;
+    }
+  }
 `;
 
 const GameStats = styled.div`
@@ -129,6 +147,20 @@ const GameStats = styled.div`
     color: #FFD200;
     letter-spacing: 1px;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  @media (max-width: 768px) {
+    top: 80px;
+    right: 20px;
+    padding: 10px 20px;
+    
+    .label {
+      font-size: 0.8em;
+    }
+    
+    .value {
+      font-size: 1.2em;
+    }
   }
 `;
 
@@ -217,6 +249,26 @@ const MapWrapper = styled.div<{ isExpanded: boolean; isSlightlyExpanded: boolean
       }
     }
   }
+  
+  @media (max-width: 768px) {
+    bottom: 100px;
+    right: 20px;
+    width: ${props => {
+      if (props.isExpanded) return 'calc(100% - 40px)';
+      if (props.isSlightlyExpanded) return 'calc(100% - 40px)';
+      return 'calc(100% - 40px)';
+    }};
+    height: ${props => {
+      if (props.isExpanded) return '300px';
+      if (props.isSlightlyExpanded) return '300px';
+      return '200px';
+    }};
+    
+    &:hover:not([data-expanded="true"]) {
+      width: calc(100% - 40px);
+      height: 250px;
+    }
+  }
 `;
 
 const ToggleMapSizeButton = styled.button`
@@ -281,6 +333,11 @@ const ScoreOverlay = styled.div<{ isVisible: boolean }>`
   z-index: 2000;
   padding: 40px;
   backdrop-filter: blur(10px);
+  overflow-y: auto;
+  
+  @media (max-width: 768px) {
+    padding: 20px 15px;
+  }
 `;
 
 const ResultInfo = styled.div`
@@ -303,6 +360,18 @@ const ResultInfo = styled.div`
     font-size: 1.4em;
     margin: 0.8em 0;
     opacity: 0.9;
+  }
+  
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+    
+    h2 {
+      font-size: 2.2em;
+    }
+    
+    p {
+      font-size: 1.1em;
+    }
   }
 `;
 
@@ -327,6 +396,12 @@ const ResultMapContainer = styled.div`
     background: linear-gradient(to bottom, rgba(0,83,159,0.4) 0%, rgba(0,83,159,0) 100%);
     pointer-events: none;
     z-index: 1;
+  }
+  
+  @media (max-width: 768px) {
+    width: 95%;
+    height: 45%;
+    margin: 15px 0;
   }
 `;
 
@@ -459,10 +534,21 @@ const ButtonGroup = styled.div`
   gap: 20px;
   margin-top: 40px;
   justify-content: center;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    align-items: center;
+  }
 `;
 
 const NavigationButton = styled(Button)`
   min-width: 200px;
+  
+  @media (max-width: 768px) {
+    min-width: 80%;
+  }
 `;
 
 const GuessButton = styled(Button)`
@@ -472,10 +558,13 @@ const GuessButton = styled(Button)`
   transform: translateX(-50%);
   padding: 18px 50px;
   font-size: 20px;
-  z-index: 999;
+  z-index: 1500;
   background: rgba(255, 210, 0, 0.9);
   backdrop-filter: blur(10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  min-width: 220px;
+  text-align: center;
 
   &:hover:not(:disabled) {
     background: #FFD200;
@@ -486,6 +575,24 @@ const GuessButton = styled(Button)`
   &:disabled {
     background: rgba(255, 255, 255, 0.1);
     transform: translateX(-50%);
+  }
+  
+  @media (max-width: 768px) {
+    bottom: 20px;
+    padding: 16px 30px;
+    font-size: 16px;
+    min-width: 180px;
+    width: calc(100% - 40px);
+    max-width: 300px;
+  }
+  
+  /* iOS Safari specific fix */
+  @supports (-webkit-touch-callout: none) {
+    /* Fix for iOS Safari's bottom bar */
+    @media (max-width: 768px) {
+      bottom: 30px; 
+      padding-bottom: 16px;
+    }
   }
 `;
 
