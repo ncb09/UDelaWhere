@@ -23,6 +23,8 @@ const HomePage = styled.div`
     color: #FFD200;
     text-transform: uppercase;
     letter-spacing: 2px;
+    font-style: italic;
+    -webkit-text-stroke: 1px black;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
   
@@ -58,7 +60,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={
           <HomePage>
-            <h1>UDelaWhere?</h1>
+            <h1>UDelaWhere??</h1>
             <p className="subtitle">
               Test your knowledge of the University of Delaware campus in this interactive geolocation game. 
               Explore 360° views of locations and try to pinpoint them on the map!
