@@ -25,6 +25,12 @@ const HomePage = styled.div`
     letter-spacing: 2px;
     -webkit-text-stroke: 1px black;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    
+    @media (max-width: 480px) {
+      font-size: 2.8em;
+      margin-bottom: 0.6em;
+      padding: 0 10px;
+    }
   }
   
   p.subtitle {
@@ -35,6 +41,16 @@ const HomePage = styled.div`
     margin-right: auto;
     opacity: 0.9;
     line-height: 1.6;
+    
+    @media (max-width: 480px) {
+      font-size: 1.1em;
+      margin-bottom: 1.5em;
+      padding: 0 5px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    padding: 20px 10px;
   }
 `;
 
