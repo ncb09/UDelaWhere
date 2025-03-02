@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const GameModeCard = styled.div`
-  background: white;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 40px;
   min-height: 400px;
   display: flex;
@@ -12,10 +12,11 @@ const GameModeCard = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
+  border: 2px solid rgba(255, 210, 0, 0.1);
 
   &:before {
     content: '';
@@ -24,14 +25,15 @@ const GameModeCard = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0));
+    background: linear-gradient(135deg, rgba(255, 210, 0, 0.1), rgba(0, 83, 159, 0.05));
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
   &:hover {
     transform: translateY(-15px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(33, 150, 243, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 210, 0, 0.3);
 
     &:before {
       opacity: 1;
@@ -39,7 +41,7 @@ const GameModeCard = styled.div`
 
     h2 {
       transform: translateY(-5px);
-      color: #1976D2;
+      color: #FFD200;
     }
 
     p {
@@ -52,13 +54,14 @@ const GameModeCard = styled.div`
 const Title = styled.h2`
   font-size: 2.5em;
   margin-bottom: 20px;
-  color: #2196F3;
+  color: #FFD200;
   transition: all 0.3s ease;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 `;
 
 const Description = styled.p`
   font-size: 1.2em;
-  color: #666;
+  color: rgba(255, 255, 255, 0.9);
   text-align: center;
   line-height: 1.6;
   margin-bottom: 30px;
@@ -69,7 +72,6 @@ const Description = styled.p`
 const Icon = styled.div`
   font-size: 4em;
   margin-bottom: 30px;
-  color: #2196F3;
   transition: all 0.3s ease;
 
   ${GameModeCard}:hover & {
@@ -80,21 +82,21 @@ const Icon = styled.div`
 const StartButton = styled.button`
   padding: 15px 40px;
   font-size: 1.2em;
-  background: #2196F3;
-  color: white;
+  background: #FFD200;
+  color: #00539F;
   border: none;
   border-radius: 30px;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: auto;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(255, 210, 0, 0.3);
 
   &:hover {
-    background: #1976D2;
+    background: #FFE04C;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    box-shadow: 0 6px 20px rgba(255, 210, 0, 0.4);
   }
 `;
 
