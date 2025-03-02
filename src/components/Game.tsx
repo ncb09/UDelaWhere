@@ -130,54 +130,6 @@ const GameStats = styled.div`
   }
 `;
 
-const Header = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: linear-gradient(to bottom, rgba(0,27,61,0.95) 0%, rgba(0,27,61,0) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  z-index: 2500;
-  pointer-events: auto;
-
-  h1 {
-    color: #FFD200;
-    font-size: 28px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    animation: ${fadeIn} 0.5s ease-out;
-    cursor: pointer;
-  }
-
-  nav {
-    display: flex;
-    gap: 30px;
-    align-items: center;
-  }
-
-  a {
-    color: white;
-    text-decoration: none;
-    font-size: 18px;
-    font-weight: 600;
-    transition: color 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-
-    &:hover {
-      color: #FFD200;
-    }
-  }
-`;
-
 const CloseButton = styled.button`
   position: absolute;
   top: 15px;
@@ -204,12 +156,20 @@ const CloseButton = styled.button`
   }
 `;
 
-const MapWrapper = styled.div<{ isExpanded: boolean }>`
+const MapWrapper = styled.div<{ isExpanded: boolean; isSlightlyExpanded: boolean }>`
   position: fixed;
   bottom: 120px;
   right: 40px;
-  width: ${props => props.isExpanded ? 'calc(100% - 80px)' : '400px'};
-  height: ${props => props.isExpanded ? 'calc(100vh - 300px)' : '250px'};
+  width: ${props => {
+    if (props.isExpanded) return 'calc(100% - 80px)';
+    if (props.isSlightlyExpanded) return '750px';
+    return '400px';
+  }};
+  height: ${props => {
+    if (props.isExpanded) return 'calc(100vh - 300px)';
+    if (props.isSlightlyExpanded) return '450px';
+    return '250px';
+  }};
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   border-radius: 12px;
@@ -218,16 +178,10 @@ const MapWrapper = styled.div<{ isExpanded: boolean }>`
   transform-origin: bottom right;
   border: 2px solid ${props => props.isExpanded ? '#FFD200' : 'rgba(255, 210, 0, 0.3)'};
 
-  &:hover {
-    width: calc(100% - 80px);
-    height: calc(100vh - 300px);
-    transform: scale(1);
-    border-color: #FFD200;
-
-    ${CloseButton}, .leaflet-control-zoom {
-      opacity: 1;
-      transform: translateX(0);
-    }
+  ${CloseButton}, .leaflet-control-zoom {
+    opacity: ${props => props.isExpanded ? 1 : 0};
+    transform: ${props => props.isExpanded ? 'translateX(0)' : 'translateX(20px)'};
+    transition: all 0.3s ease;
   }
 
   .leaflet-container {
@@ -243,9 +197,6 @@ const MapWrapper = styled.div<{ isExpanded: boolean }>`
 
   .leaflet-control-zoom {
     margin: 15px;
-    opacity: 0;
-    transform: translateX(20px);
-    transition: all 0.3s ease;
     
     a {
       background: rgba(0, 83, 159, 0.9);
@@ -256,6 +207,29 @@ const MapWrapper = styled.div<{ isExpanded: boolean }>`
         background: #00539F;
       }
     }
+  }
+`;
+
+const ToggleMapSizeButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1002;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.9);
   }
 `;
 
@@ -617,6 +591,7 @@ const Game: React.FC = () => {
   });
 
   const [isMapExpanded, setIsMapExpanded] = useState(false);
+  const [isSlightlyExpanded, setIsSlightlyExpanded] = useState(false);
 
   useEffect(() => {
     // Check if we need to show the username modal
@@ -789,6 +764,19 @@ const Game: React.FC = () => {
 
   const handleMapToggle = () => {
     setIsMapExpanded(!isMapExpanded);
+    // When fully expanding, ensure we're not in the slightly expanded state
+    if (!isMapExpanded) {
+      setIsSlightlyExpanded(false);
+    }
+  };
+
+  const handleSlightToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsSlightlyExpanded(!isSlightlyExpanded);
+    // Make sure we're not in full expanded mode
+    if (isMapExpanded) {
+      setIsMapExpanded(false);
+    }
   };
 
   return (
@@ -828,13 +816,6 @@ const Game: React.FC = () => {
               </form>
             </UserForm>
           </UserModal>
-          <Header>
-            <h1 onClick={() => navigate('/')}>UDelaWhere?</h1>
-            <nav>
-              <a onClick={() => navigate('/about')}>About</a>
-              <a onClick={() => navigate('/leaderboard')}>Leaderboard</a>
-            </nav>
-          </Header>
           {mode === 'challenge' && gameState.timeRemaining !== null && (
             <Timer>
               <div className="label">Time Remaining</div>
@@ -858,16 +839,28 @@ const Game: React.FC = () => {
             <ImageViewer360 objPath={gameState.locations[gameState.currentRound - 1].image} />
           </ImageViewer>
 
-          <MapWrapper isExpanded={isMapExpanded}>
+          <MapWrapper 
+            isExpanded={isMapExpanded}
+            isSlightlyExpanded={isSlightlyExpanded}
+            onClick={(e) => {/* Prevent map from expanding to fullscreen when clicked */
+              e.stopPropagation();
+            }}
+          >
             <CloseButton 
               onClick={(e) => {
                 e.stopPropagation();
-                handleMapToggle();
+                if (isMapExpanded) handleMapToggle();
               }}
               style={{ opacity: isMapExpanded ? 1 : 0 }}
             >
               ×
             </CloseButton>
+            <ToggleMapSizeButton
+              onClick={handleSlightToggle}
+              style={{ display: isMapExpanded ? 'none' : 'flex' }}
+            >
+              {isSlightlyExpanded ? '⊟' : '⊞'}
+            </ToggleMapSizeButton>
             <MapContainer
               center={[39.686757, -75.755243] as [number, number]}
               zoom={15}

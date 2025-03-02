@@ -10,28 +10,44 @@ import Leaderboard from './components/Leaderboard';
 import About from './components/About';
 
 const HomePage = styled.div`
-  padding: 40px;
-  max-width: 1400px;
-  margin: 0 auto;
+  min-height: 100vh;
+  background-color: #001B3D;
+  color: white;
+  padding: 40px 20px;
+  font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   text-align: center;
 
   h1 {
     font-size: 3.5em;
-    margin-bottom: 1em;
-    color: #2196F3;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.8em;
+    color: #FFD200;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  p.subtitle {
+    font-size: 1.4em;
+    margin-bottom: 2em;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.9;
+    line-height: 1.6;
   }
 `;
 
 const GameModesContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
-  margin-top: 40px;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     grid-template-columns: 1fr;
+    max-width: 600px;
   }
 `;
 
@@ -43,6 +59,10 @@ const App: React.FC = () => {
         <Route path="/" element={
           <HomePage>
             <h1>UDelaWhere?</h1>
+            <p className="subtitle">
+              Test your knowledge of the University of Delaware campus in this interactive geolocation game. 
+              Explore 360° views of locations and try to pinpoint them on the map!
+            </p>
             <GameModesContainer>
               <GameMode
                 title="Practice Mode"
