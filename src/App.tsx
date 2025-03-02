@@ -23,7 +23,6 @@ const HomePage = styled.div`
     color: #FFD200;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-style: italic;
     -webkit-text-stroke: 1px black;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }

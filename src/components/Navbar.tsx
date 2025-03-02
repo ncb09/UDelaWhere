@@ -24,7 +24,6 @@ const Logo = styled(Link)`
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-style: italic;
   -webkit-text-stroke: 1px black;
   text-shadow: 
     0 2px 4px rgba(0,0,0,0.5), 
@@ -45,7 +44,6 @@ const Logo = styled(Link)`
     left: 2px;
     top: 2px;
     color: rgba(0, 27, 61, 0.6);
-    font-style: italic;
     -webkit-text-stroke: 0;
     z-index: -1;
   }

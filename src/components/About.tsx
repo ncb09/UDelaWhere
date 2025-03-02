@@ -21,7 +21,6 @@ const Title = styled.h1`
   margin-bottom: 40px;
   text-transform: uppercase;
   letter-spacing: 2px;
-  font-style: italic;
   -webkit-text-stroke: 1px black;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 `;

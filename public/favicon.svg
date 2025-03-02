@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Blue background -->
+  <rect width="24" height="24" fill="#001B3D"/>
+  
+  <!-- Question marks in UDelaWhere Yellow (#FFD200) -->
+  <text x="4.5" y="17" font-size="16" font-weight="bold" fill="#FFD200" text-anchor="middle">?</text>
+  <text x="14.5" y="17" font-size="16" font-weight="bold" fill="#FFD200" text-anchor="middle">?</text>
+</svg> 
