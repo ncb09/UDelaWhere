@@ -98,3 +98,33 @@ npm start
 ```
 
 The game will be available at http://localhost:3000 
+
+## Supabase Integration
+
+The leaderboard functionality uses Supabase to store and retrieve player scores. Follow these steps to set up Supabase for the leaderboard:
+
+1. **Create a Supabase Project**:
+   - Sign up at [Supabase](https://supabase.com/) and create a new project
+   - Once your project is created, navigate to the SQL Editor in the Supabase dashboard
+
+2. **Set Up Database Schema**:
+   - Run the SQL migration script in `scripts/supabase-migration.sql` in the SQL Editor
+   - This will create the required table and security policies for the leaderboard
+
+3. **Configure Environment Variables**:
+   - Copy the `.env` file to `.env.local`
+   - Update the Supabase credentials in `.env.local`:
+     ```
+     REACT_APP_SUPABASE_URL=your_supabase_url
+     REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+     ```
+   - You can find these values in your Supabase project settings under API
+
+4. **Restart the Development Server**:
+   - If your development server is running, restart it to apply the new environment variables
+
+## Leaderboard Features
+
+- **Unique Usernames**: The system ensures usernames are unique across all players
+- **Best Score Tracking**: Only the highest score for each player is shown on the leaderboard
+- **Real-time Updates**: The leaderboard is updated in real-time when new scores are submitted 

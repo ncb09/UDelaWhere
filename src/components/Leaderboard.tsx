@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { getLeaderboard, LeaderboardEntry } from '../lib/supabase';
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -82,53 +83,97 @@ const Username = styled.div`
   font-weight: 500;
 `;
 
-interface LeaderboardEntry {
-  username: string;
-  score: number;
-  timestamp: number;
-}
+const LoadingSpinner = styled.div`
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 210, 0, 0.3);
+  border-radius: 50%;
+  border-top-color: #FFD200;
+  animation: spin 1s ease-in-out infinite;
+  margin: 30px auto;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #FF6B6B;
+  text-align: center;
+  margin: 30px 0;
+  padding: 20px;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 8px;
+  font-weight: 500;
+`;
+
+const NoDataMessage = styled.div`
+  text-align: center;
+  margin: 30px 0;
+  padding: 40px 20px;
+  opacity: 0.7;
+  font-size: 1.2em;
+`;
 
 const Leaderboard: React.FC = () => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentUser] = useState<string | null>(() => localStorage.getItem('username'));
 
   useEffect(() => {
-    // Load leaderboard data from localStorage
-    const storedLeaderboard = localStorage.getItem('leaderboard');
-    if (storedLeaderboard) {
-      const parsedLeaderboard = JSON.parse(storedLeaderboard);
-      // Sort by score (highest first) and take top 10
-      const sortedLeaderboard = parsedLeaderboard
-        .sort((a: LeaderboardEntry, b: LeaderboardEntry) => b.score - a.score)
-        // Remove duplicates (keep highest score for each user)
-        .filter((entry: LeaderboardEntry, index: number, self: LeaderboardEntry[]) =>
-          index === self.findIndex((t) => t.username === entry.username)
-        )
-        .slice(0, 10);
-      setLeaderboard(sortedLeaderboard);
+    async function fetchLeaderboard() {
+      try {
+        setLoading(true);
+        const data = await getLeaderboard();
+        setLeaderboard(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching leaderboard:', err);
+        setError('Failed to load leaderboard data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     }
+
+    fetchLeaderboard();
   }, []);
 
   return (
     <LeaderboardContainer>
       <Title>Challenge Mode Leaderboard</Title>
-      <LeaderboardTable>
-        <LeaderboardHeader>
-          <div>Rank</div>
-          <div>Player</div>
-          <div>Score</div>
-        </LeaderboardHeader>
-        {leaderboard.map((entry, index) => (
-          <LeaderboardRow 
-            key={entry.username} 
-            isCurrentUser={entry.username === currentUser}
-          >
-            <Rank rank={index + 1}>#{index + 1}</Rank>
-            <Username>{entry.username}</Username>
-            <Score>{entry.score}</Score>
-          </LeaderboardRow>
-        ))}
-      </LeaderboardTable>
+      
+      {loading ? (
+        <div style={{ textAlign: 'center' }}>
+          <LoadingSpinner />
+          <div>Loading leaderboard data...</div>
+        </div>
+      ) : error ? (
+        <ErrorMessage>{error}</ErrorMessage>
+      ) : leaderboard.length === 0 ? (
+        <NoDataMessage>
+          No scores on the leaderboard yet. Be the first to play and submit your score!
+        </NoDataMessage>
+      ) : (
+        <LeaderboardTable>
+          <LeaderboardHeader>
+            <div>Rank</div>
+            <div>Player</div>
+            <div>Score</div>
+          </LeaderboardHeader>
+          {leaderboard.map((entry, index) => (
+            <LeaderboardRow 
+              key={entry.id || index} 
+              isCurrentUser={entry.username === currentUser}
+            >
+              <Rank rank={index + 1}>#{index + 1}</Rank>
+              <Username>{entry.username}</Username>
+              <Score>{entry.score}</Score>
+            </LeaderboardRow>
+          ))}
+        </LeaderboardTable>
+      )}
     </LeaderboardContainer>
   );
 };

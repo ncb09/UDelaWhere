@@ -6,6 +6,7 @@ import styled, { keyframes } from 'styled-components';
 import L from 'leaflet';
 import ImageViewer360 from './ImageViewer360';
 import locationsData from '../data/locations.json';
+import { addScore, LeaderboardEntry as SupabaseLeaderboardEntry, isUsernameTaken } from '../lib/supabase';
 
 // Fix for default marker icons in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -401,6 +402,14 @@ const Input = styled.input`
   }
 `;
 
+const ErrorText = styled.div`
+  color: #FF6B6B;
+  font-size: 0.9em;
+  margin-bottom: 15px;
+  text-align: left;
+  animation: ${slideUp} 0.3s ease-out;
+`;
+
 const GameEndScreen = styled.div`
   position: fixed;
   top: 0;
@@ -599,6 +608,8 @@ const Game: React.FC = () => {
 
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isSlightlyExpanded, setIsSlightlyExpanded] = useState(false);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
   useEffect(() => {
     // Check if we need to show the username modal
@@ -607,21 +618,47 @@ const Game: React.FC = () => {
     }
   }, [mode, gameState.username]);
 
-  const handleUsernameSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleUsernameSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const username = (event.currentTarget.elements.namedItem('username') as HTMLInputElement).value.trim();
-    if (username) {
+    const usernameInput = event.currentTarget.elements.namedItem('username') as HTMLInputElement;
+    const username = usernameInput.value.trim();
+    
+    if (!username) {
+      setUsernameError('Username cannot be empty');
+      return;
+    }
+
+    try {
+      setIsCheckingUsername(true);
+      setUsernameError(null);
+      
+      // Check if username already exists in Supabase
+      const isTaken = await isUsernameTaken(username);
+      
+      if (isTaken) {
+        setUsernameError('This username is already taken. Please choose another one.');
+        setIsCheckingUsername(false);
+        return;
+      }
+      
+      // Username is available, save it
       localStorage.setItem('username', username);
       setGameState(prev => ({ 
         ...prev, 
         username,
         showUsernameModal: false 
       }));
+      setIsCheckingUsername(false);
+    } catch (error) {
+      console.error('Error checking username:', error);
+      setUsernameError('An error occurred. Please try again.');
+      setIsCheckingUsername(false);
     }
   };
 
-  const submitScore = (finalScore: number) => {
+  const submitScore = async (finalScore: number) => {
     if (mode === 'challenge' && gameState.username) {
+      // Keep the localStorage version for backward compatibility
       const leaderboardEntry: LeaderboardEntry = {
         username: gameState.username,
         score: finalScore,
@@ -645,6 +682,16 @@ const Game: React.FC = () => {
 
       // Save back to localStorage
       localStorage.setItem('leaderboard', JSON.stringify(sortedLeaderboard));
+      
+      // Submit to Supabase
+      try {
+        await addScore({
+          username: gameState.username,
+          score: finalScore
+        });
+      } catch (error) {
+        console.error('Error submitting score to Supabase:', error);
+      }
     }
   };
 
@@ -822,8 +869,12 @@ const Game: React.FC = () => {
                   placeholder="Enter your username"
                   maxLength={20}
                   required
+                  disabled={isCheckingUsername}
                 />
-                <Button type="submit">Start Game</Button>
+                {usernameError && <ErrorText>{usernameError}</ErrorText>}
+                <Button type="submit" disabled={isCheckingUsername}>
+                  {isCheckingUsername ? 'Checking...' : 'Start Game'}
+                </Button>
               </form>
             </UserForm>
           </UserModal>
