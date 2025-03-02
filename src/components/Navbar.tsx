@@ -15,6 +15,11 @@ const NavContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  
+  @media (max-width: 480px) {
+    padding: 0 10px;
+    flex-wrap: wrap;
+  }
 `;
 
 const Logo = styled(Link)`
@@ -47,11 +52,24 @@ const Logo = styled(Link)`
     -webkit-text-stroke: 0;
     z-index: -1;
   }
+  
+  @media (max-width: 480px) {
+    font-size: 22px;
+    
+    &::after {
+      left: 1px;
+      top: 1px;
+    }
+  }
 `;
 
 const NavLinks = styled.div`
   display: flex;
   gap: 30px;
+  
+  @media (max-width: 480px) {
+    gap: 15px;
+  }
 `;
 
 const NavLink = styled(Link)`
@@ -65,6 +83,10 @@ const NavLink = styled(Link)`
   
   &:hover {
     color: #FFD200;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 16px;
   }
 `;
 
@@ -82,4 +104,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

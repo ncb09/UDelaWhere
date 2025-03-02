@@ -213,21 +213,24 @@ const ImageViewer360: React.FC<ImageViewer360Props> = ({ objPath }) => {
       // Touch controls
       const handleTouchMove = (e: TouchEvent) => {
         if (!isMouseDown.current || !cameraRef.current) return;
+        
+        // Prevent default behavior to stop page scrolling
+        e.preventDefault();
 
         const camera = cameraRef.current;
         const deltaX = e.touches[0].clientX - mousePosition.current.x;
         const deltaY = e.touches[0].clientY - mousePosition.current.y;
 
         // Update rotation with improved sensitivity
-        lonLatRef.current.lon -= deltaX * 0.3; // Reverted back to original
+        lonLatRef.current.lon -= deltaX * 0.3; 
         lonLatRef.current.lat = Math.max(-89, Math.min(89, lonLatRef.current.lat + deltaY * 0.3));
 
         const phi = THREE.MathUtils.degToRad(90 - lonLatRef.current.lat);
         const theta = THREE.MathUtils.degToRad(lonLatRef.current.lon);
 
-        const x = Math.sin(phi) * Math.cos(theta); // Reverted back to original
+        const x = Math.sin(phi) * Math.cos(theta);
         const y = Math.cos(phi);
-        const z = Math.sin(phi) * Math.sin(theta); // Reverted back to original
+        const z = Math.sin(phi) * Math.sin(theta);
 
         camera.lookAt(new THREE.Vector3(x, y, z));
 
@@ -235,6 +238,9 @@ const ImageViewer360: React.FC<ImageViewer360Props> = ({ objPath }) => {
       };
 
       const handleTouchStart = (e: TouchEvent) => {
+        // Prevent default to stop unwanted behaviors
+        e.preventDefault();
+        
         isMouseDown.current = true;
         mousePosition.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       };
