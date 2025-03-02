@@ -49,6 +49,15 @@ const GameModeCard = styled.div`
       opacity: 0.9;
     }
   }
+  
+  @media (max-width: 480px) {
+    min-height: 350px;
+    padding: 30px 20px;
+    
+    &:hover {
+      transform: translateY(-10px) scale(1.01);
+    }
+  }
 `;
 
 const Title = styled.h2`
@@ -57,6 +66,11 @@ const Title = styled.h2`
   color: #FFD200;
   transition: all 0.3s ease;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  
+  @media (max-width: 480px) {
+    font-size: 2.2em;
+    margin-bottom: 15px;
+  }
 `;
 
 const Description = styled.p`
@@ -67,6 +81,12 @@ const Description = styled.p`
   margin-bottom: 30px;
   transition: all 0.3s ease;
   max-width: 80%;
+  
+  @media (max-width: 480px) {
+    font-size: 1em;
+    margin-bottom: 25px;
+    max-width: 95%;
+  }
 `;
 
 const Icon = styled.div`
@@ -76,6 +96,11 @@ const Icon = styled.div`
 
   ${GameModeCard}:hover & {
     transform: scale(1.1) rotate(5deg);
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 3.5em;
+    margin-bottom: 20px;
   }
 `;
 
@@ -97,6 +122,11 @@ const StartButton = styled.button`
     background: #FFE04C;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 210, 0, 0.4);
+  }
+  
+  @media (max-width: 480px) {
+    padding: 12px 30px;
+    font-size: 1.1em;
   }
 `;
 
