@@ -4,6 +4,30 @@ import { GoogleGenerativeAI, Part } from '@google/generative-ai';
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY || '';
 const genAI = new GoogleGenerativeAI(API_KEY);
 
+// Add the array of fun facts about the University of Delaware
+const udFunFacts = [
+  "Did you know? The University of Delaware was founded in 1743, making it one of the oldest universities in the United States.",
+  "Did you know? UD's mascot, YoUDee, has been inducted into the Mascot Hall of Fame!",
+  "Did you know? The University of Delaware is the birthplace of study abroad programs. The first program began in 1923!",
+  "Did you know? UD was originally called 'Academy of Newark' before becoming a university.",
+  "Did you know? The iconic blue and gold colors of UD were adopted in 1889.",
+  "Did you know? Joe Biden, the 46th President of the United States, graduated from UD in 1965.",
+  "Did you know? The UD fight song, 'Delaware Fight Song,' was written in 1933 by alumnus George Kelly.",
+  "Did you know? The Green at UD is modeled after the lawn at the University of Virginia, designed by Thomas Jefferson.",
+  "Did you know? UD's Carpenter Sports Building is affectionately known as the 'Little Bob.'",
+  "Did you know? UDairy Creamery ice cream is made from milk produced by cows at the university's farm.",
+  "Did you know? UD is home to the only accredited art conservation program in the country.",
+  "Did you know? Nobel Prize-winning scientist Daniel Nathans is a UD alumnus.",
+  "Did you know? The Gore Hall on campus is named after a former Delaware governor who taught at UD.",
+  "Did you know? The Delaware Blue Hen became the official state bird because of its association with UD.",
+  "Did you know? The university's bell, Old College Bell, dates back to 1833.",
+  "Did you know? UD's marching band has performed at the Thanksgiving Day Parade in Philadelphia multiple times.",
+  "Did you know? The university's first class in 1743 had only 10 students.",
+  "Did you know? The historic Deer's Head Inn served generations of UD students and faculty since the 1800s.",
+  "Did you know? UD's official charter was signed by three signers of the Declaration of Independence.",
+  "Did you know? The Chrysler plant that once operated in Newark employed many UD students over the years."
+];
+
 // Function to analyze an image and get a recognizability score (1-10)
 export async function analyzeImageRecognizability(imageUrl: string): Promise<number> {
   try {
@@ -182,22 +206,19 @@ export async function getUDFunFact(locationName?: string): Promise<string> {
   try {
     console.log(`🎓 Fetching fun fact about UD ${locationName ? `related to ${locationName}` : ''}`);
     
-    // Check if API key is available
-    if (!API_KEY) {
-      console.error("❌ ERROR: Gemini API key is missing. Please check your .env file.");
-      return "Did you know? The University of Delaware was founded in 1743, making it one of the oldest universities in the United States.";
+    // If no API key is available or we're fetching a general fact without a location,
+    // just return a random fact from our collection
+    if (!API_KEY || !locationName) {
+      const randomFact = udFunFacts[Math.floor(Math.random() * udFunFacts.length)];
+      console.log(`📚 Using random pre-defined fun fact: "${randomFact}"`);
+      return randomFact;
     }
     
     // Initialize the Gemini Pro model
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     
-    // Create the prompt based on whether a specific location was provided
-    const prompt = locationName 
-      ? `Give me a short, interesting fun fact about the University of Delaware related to ${locationName} or that area of campus.
-         The fact should be about the university's history, famous alumni, traditions, or unique features.
-         Keep it to 1-2 sentences maximum. Make it casual and interesting for college students.
-         Start with "Did you know?" and don't use markdown formatting.`
-      : `Give me a short, interesting fun fact about the University of Delaware.
+    // Create the prompt for location-specific facts
+    const prompt = `Give me a short, interesting fun fact about the University of Delaware related to ${locationName} or that area of campus.
          The fact should be about the university's history, famous alumni, traditions, or unique features.
          Keep it to 1-2 sentences maximum. Make it casual and interesting for college students.
          Start with "Did you know?" and don't use markdown formatting.`;
@@ -209,11 +230,11 @@ export async function getUDFunFact(locationName?: string): Promise<string> {
     
     console.log(`📝 Received fun fact: "${responseText}"`);
     
-    // Return the fun fact, or a default one if the response is empty
-    return responseText.trim() || "Did you know? The University of Delaware was founded in 1743, making it one of the oldest universities in the United States.";
+    // Return the API-generated fact, or a random one if the response is empty
+    return responseText.trim() || udFunFacts[Math.floor(Math.random() * udFunFacts.length)];
   } catch (error) {
     console.error("❌ ERROR: Failed to get UD fun fact:", error);
-    // Return a default fun fact if there's an error
-    return "Did you know? The University of Delaware was founded in 1743, making it one of the oldest universities in the United States.";
+    // Return a random fun fact if there's an error
+    return udFunFacts[Math.floor(Math.random() * udFunFacts.length)];
   }
 } 
