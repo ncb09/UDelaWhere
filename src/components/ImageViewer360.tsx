@@ -38,6 +38,27 @@ const ControlsInfo = styled.div`
   font-size: 0.9rem;
   opacity: 0.8;
   transition: opacity 0.3s;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px;
+  line-height: 0.5;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 
   &:hover {
     opacity: 1;
@@ -51,6 +72,7 @@ interface ImageViewer360Props {
 const ImageViewer360: React.FC<ImageViewer360Props> = ({ objPath }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showControls, setShowControls] = useState(true);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -259,23 +281,23 @@ const ImageViewer360: React.FC<ImageViewer360Props> = ({ objPath }) => {
     <ViewerContainer ref={containerRef}>
       {isLoading && (
         <LoadingOverlay>
-          <p>Loading skybox textures...</p>
-          <p>Check console for progress</p>
+          <div>Loading 360° View...</div>
         </LoadingOverlay>
       )}
+      
       {error && (
         <ErrorOverlay>
-          <p>{error}</p>
-          <p>Check browser console for details</p>
+          <div>Error: {error}</div>
         </ErrorOverlay>
       )}
-      <ControlsInfo>
-        <h4>Controls:</h4>
-        <ul>
-          <li>Click and drag to look around</li>
-          <li>Touch and drag on mobile</li>
-        </ul>
-      </ControlsInfo>
+      
+      {!isLoading && !error && showControls && (
+        <ControlsInfo>
+          <CloseButton onClick={() => setShowControls(false)}>×</CloseButton>
+          <p>Click and drag to look around</p>
+          <p>Use the map below to place your guess</p>
+        </ControlsInfo>
+      )}
     </ViewerContainer>
   );
 };
