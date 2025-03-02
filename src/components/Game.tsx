@@ -7,7 +7,7 @@ import L from 'leaflet';
 import ImageViewer360 from './ImageViewer360';
 import locationsData from '../data/locations.json';
 import { addScore, LeaderboardEntry as SupabaseLeaderboardEntry, isUsernameTaken } from '../lib/supabase';
-import { processLocationImages } from '../lib/gemini';
+import { processLocationImages, getUDFunFact } from '../lib/gemini';
 
 // Fix for default marker icons in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -559,6 +559,35 @@ const DebugInfo = styled.div`
   }
 `;
 
+const FunFactContainer = styled.div`
+  background-color: rgba(255, 210, 0, 0.1);
+  border-left: 4px solid #FFD200;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 0 8px 8px 0;
+  position: relative;
+`;
+
+const FunFactText = styled.p`
+  margin: 0;
+  font-style: italic;
+  line-height: 1.4;
+`;
+
+const FunFactIcon = styled.div`
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  background: #FFD200;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+`;
+
 interface LeaderboardEntry {
   username: string;
   score: number;
@@ -593,6 +622,8 @@ interface GameState {
   showUsernameModal: boolean;
   gameEnded: boolean;
   locationsProcessed: boolean;
+  funFact: string;
+  isLoadingFunFact: boolean;
 }
 
 // Add this new component for handling map clicks
@@ -677,7 +708,9 @@ const Game: React.FC = () => {
       username: localStorage.getItem('username'),
       showUsernameModal: false,
       gameEnded: false,
-      locationsProcessed: false
+      locationsProcessed: false,
+      funFact: "",
+      isLoadingFunFact: false
     };
   });
 
@@ -879,19 +912,46 @@ const Game: React.FC = () => {
       showingResult: true,
       lastGuessScore: points,
       lastGuessDistance: Number(distance.toFixed(0)),
-      pastGuesses: [...prev.pastGuesses, newGuess]
+      pastGuesses: [...prev.pastGuesses, newGuess],
+      isLoadingFunFact: true
     }));
+
+    // Fetch a fun fact about the location or general UD fact
+    fetchFunFact(currentLocation.name);
+  };
+
+  const fetchFunFact = async (locationName?: string) => {
+    try {
+      const funFact = await getUDFunFact(locationName);
+      setGameState(prev => ({
+        ...prev,
+        funFact,
+        isLoadingFunFact: false
+      }));
+    } catch (error) {
+      console.error("Error fetching fun fact:", error);
+      setGameState(prev => ({
+        ...prev,
+        funFact: "Did you know? The University of Delaware's colors are blue and gold, representing the colors of the state's flag.",
+        isLoadingFunFact: false
+      }));
+    }
   };
 
   const handleNextRound = () => {
     if (gameState.currentRound === 5) {
-      // Game is complete, submit score and show end screen
+      // Game is complete, submit score and get a final fun fact
       submitScore(gameState.score);
       setGameState(prev => ({
         ...prev,
         gameEnded: true,
-        showingResult: false
+        showingResult: false,
+        isLoadingFunFact: true
       }));
+      
+      // Get a general fun fact about UD for the end screen
+      fetchFunFact();
+      
       return;
     }
     
@@ -961,6 +1021,17 @@ const Game: React.FC = () => {
             <p>Your Final Score: {gameState.score}</p>
             <p>Maximum Possible: 25,000</p>
             <p>Accuracy: {Math.round((gameState.score / 25000) * 100)}%</p>
+            {gameState.isLoadingFunFact ? (
+              <FunFactContainer>
+                <FunFactIcon>💡</FunFactIcon>
+                <FunFactText>Loading fun fact...</FunFactText>
+              </FunFactContainer>
+            ) : (
+              <FunFactContainer>
+                <FunFactIcon>💡</FunFactIcon>
+                <FunFactText>{gameState.funFact}</FunFactText>
+              </FunFactContainer>
+            )}
             <ButtonGroup>
               <NavigationButton onClick={() => navigate('/')}>
                 Home
@@ -1177,6 +1248,18 @@ const Game: React.FC = () => {
                 )}
               </MapContainer>
             </ResultMapContainer>
+            
+            {gameState.isLoadingFunFact ? (
+              <FunFactContainer>
+                <FunFactIcon>💡</FunFactIcon>
+                <FunFactText>Loading fun fact...</FunFactText>
+              </FunFactContainer>
+            ) : (
+              <FunFactContainer>
+                <FunFactIcon>💡</FunFactIcon>
+                <FunFactText>{gameState.funFact}</FunFactText>
+              </FunFactContainer>
+            )}
             
             <Button onClick={handleNextRound}>
               Next Round
